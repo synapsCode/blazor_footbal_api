@@ -1,0 +1,70 @@
+@page "/transfers";
+@using System.Net.Http;
+@inject HttpClient httpClient;
+
+
+
+
+@code{
+  private PlayerDataResponse playersData;
+
+  private PlayerDataResponse transfers;
+  protected override async Task OnInitializedAsync()
+  {
+    var requestMessage = new HttpRequestMessage
+    {
+      RequestUri  = new Uri("https://api-football-v1.p.rapidapi.com/v3/transfers?team=33"),
+      Headers =
+        {
+          { "X-RapidAPI-Key", "80120abedemsh9ac3d2d62c391ccp1779a3jsn5867a49a7d2a" },
+          { "X-RapidAPI-Host", "api-football-v1.p.rapidapi.com" },
+        },
+    };
+    using (var response = await httpClient.SendAsync(requestMessage))
+    {
+      response.EnsureSuccessStatusCode();
+      var playerDataResponse  = await response.Content.ReadFromJsonAsync<PlayerDataResponse>();
+      if(playerDataResponse != null)
+      {
+        var PlayersDataList = playerDataResponse.response;
+          Console.WriteLine("asda");
+          foreach(var playerData in PlayersDataList)
+          {
+           Console.WriteLine($"Player ID: {playerData.player.id}, Name: {playerData.player.name}");
+           foreach(var transferData in playerData.transfers)
+           {
+             Console.WriteLine($"transfer date: {transferData.date}");
+           }
+          }
+      }
+    }
+  }
+
+  private class PlayerDataResponse
+  {
+    public List<PlayerData> response {get; set;}
+  }
+
+  private class PlayerData
+  {
+    public Player player {get; set;}
+    public List<Transfers> transfers {get; set;}
+  }
+  private class Player
+  {
+    public int id {get;set;}
+    public string name {get;set;}
+  }
+  private class Transfers
+  {
+    public string date {get; set;}
+    public Teams teams{get; set;}
+  }
+  private class Teams
+  {
+
+  }
+  private
+
+
+}
